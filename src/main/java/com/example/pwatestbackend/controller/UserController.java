@@ -42,7 +42,7 @@ public class UserController {
 
     @Operation(summary = "내 fcm 토큰 정보 업데이트 하기")
     @PostMapping ("/{userId}/token/{fcmToken}")
-    public User updateMyToken(@PathVariable("userId") Long id,@PathVariable("userId") String fcmToken) {
+    public User updateMyToken(@PathVariable("userId") Long id,@PathVariable("fcmToken") String fcmToken) {
         return userService.updateMyToken(id,fcmToken);
     }
 
