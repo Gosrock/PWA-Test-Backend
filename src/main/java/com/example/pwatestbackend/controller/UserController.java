@@ -6,6 +6,8 @@ import com.example.pwatestbackend.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -45,13 +47,13 @@ public class UserController {
 
     @Operation(summary = "유저한테 푸시알림 보내기")
     @PostMapping ("/{userId}/push")
-    public void sendPushToUser(@RequestParam("userId") Long id) {
+    public void sendPushToUser(@RequestParam("userId") Long id) throws ExecutionException, InterruptedException {
         userService.sendPushToUser(id);
     }
 
     @Operation(summary = "브로드 캐스팅하기")
     @PostMapping ("/broadcast")
-    public void broadcast() {
+    public void broadcast() throws ExecutionException, InterruptedException {
         userService.broadcast();
     }
 

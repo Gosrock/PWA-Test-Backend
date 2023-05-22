@@ -3,6 +3,10 @@ package com.example.pwatestbackend.service;
 import com.example.pwatestbackend.domain.User;
 import com.example.pwatestbackend.domain.UserRepository;
 import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.ExecutionException;
+
+import com.example.pwatestbackend.external.fcm.FcmService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final FcmService fcmService;
     public User register(String fcmToken) {
         return userRepository.save(User.of(fcmToken));
     }
@@ -31,9 +36,19 @@ public class UserService {
         return user;
     }
 
-    public void sendPushToUser(Long id) {
+    public void sendPushToUser(Long id) throws ExecutionException, InterruptedException {
+        Optional<User> user= userRepository.findById(id);
+//                .orElseThrow(() -> new IllegalArgumentException());
+        if(user.isPresent()) {
+            fcmService.sendUser(user.get());
+        }
+
     }
 
-    public void broadcast() {
+    public void broadcast() throws ExecutionException, InterruptedException {
+        List<User> users= userRepository.findAll();
+        if(!users.isEmpty()){
+            fcmService.sendAllUser(users.stream().toList());
+        }
     }
 }
