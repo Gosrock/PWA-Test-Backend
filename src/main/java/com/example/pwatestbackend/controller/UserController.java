@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/v1/users")
-//@SecurityRequirement(name = "access-token")
 @RequiredArgsConstructor
 @Slf4j
 @Tag(name = "2. [유저]")
@@ -27,9 +26,9 @@ public class UserController {
     private final UserService userService;
 
     @Operation(summary = "회원가입")
-    @PostMapping("/register")
-    public User register() {
-        return userService.register();
+    @PostMapping("/register/{fcmToken}")
+    public User register(@RequestParam("fcmToken") String fcmToken) {
+        return userService.register(fcmToken);
     }
 
     @Operation(summary = "내정보 불러오기")
@@ -39,24 +38,24 @@ public class UserController {
     }
 
     @Operation(summary = "내 fcm 토큰 정보 업데이트 하기")
-    @PostMapping ("/{userId}/token")
-    public User updateMyToken(@RequestParam("userId") Long id) {
-        return userService.updateMyToken(id);
+    @PostMapping ("/{userId}/token/{fcmToken}")
+    public User updateMyToken(@RequestParam("userId") Long id,@RequestParam("userId") String fcmToken) {
+        return userService.updateMyToken(id,fcmToken);
     }
 
-    @Operation(summary = "내 fcm 토큰 정보 업데이트 하기")
+    @Operation(summary = "유저한테 푸시알림 보내기")
     @PostMapping ("/{userId}/push")
-    public User sendPushToUser(@RequestParam("userId") Long id) {
-        return userService.sendPushToUser(id);
+    public void sendPushToUser(@RequestParam("userId") Long id) {
+        userService.sendPushToUser(id);
     }
 
-    @Operation(summary = "내 fcm 토큰 정보 업데이트 하기")
+    @Operation(summary = "브로드 캐스팅하기")
     @PostMapping ("/broadcast")
-    public User broadcast(@RequestParam("userId") Long id) {
-        return userService.updateMyToken(id);
+    public void broadcast() {
+        userService.broadcast();
     }
 
-    @Operation(summary = "내 fcm 토큰 정보 업데이트 하기")
+    @Operation(summary = "모든 유저 정보 받아오기")
     @GetMapping
     public List<User> getAllUserInfo() {
         return userService.getAllUserInfo();

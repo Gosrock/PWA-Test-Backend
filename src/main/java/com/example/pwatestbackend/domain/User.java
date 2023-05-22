@@ -30,6 +30,10 @@ public class User {
         this.fcmToken = fcmToken;
     }
 
+    public void updateFcm(String fcmToken){
+        this.fcmToken = fcmToken;
+    }
+
     public static User of(String fcmToken){
         return User.builder().fcmToken(fcmToken).build();
     }
