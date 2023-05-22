@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -29,25 +30,25 @@ public class UserController {
 
     @Operation(summary = "회원가입")
     @PostMapping("/register/{fcmToken}")
-    public User register(@RequestParam("fcmToken") String fcmToken) {
+    public User register(@PathVariable("fcmToken") String fcmToken) {
         return userService.register(fcmToken);
     }
 
     @Operation(summary = "내정보 불러오기")
     @GetMapping("/{userId}/me")
-    public User getMyInfo(@RequestParam("userId") Long id) {
+    public User getMyInfo(@PathVariable("userId") Long id) {
         return userService.getMyInfo(id);
     }
 
     @Operation(summary = "내 fcm 토큰 정보 업데이트 하기")
     @PostMapping ("/{userId}/token/{fcmToken}")
-    public User updateMyToken(@RequestParam("userId") Long id,@RequestParam("userId") String fcmToken) {
+    public User updateMyToken(@PathVariable("userId") Long id,@PathVariable("userId") String fcmToken) {
         return userService.updateMyToken(id,fcmToken);
     }
 
     @Operation(summary = "유저한테 푸시알림 보내기")
     @PostMapping ("/{userId}/push")
-    public void sendPushToUser(@RequestParam("userId") Long id) throws ExecutionException, InterruptedException {
+    public void sendPushToUser(@PathVariable("userId") Long id) throws ExecutionException, InterruptedException {
         userService.sendPushToUser(id);
     }
 
