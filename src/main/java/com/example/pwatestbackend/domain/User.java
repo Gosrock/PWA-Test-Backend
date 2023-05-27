@@ -37,4 +37,8 @@ public class User {
     public static User of(String fcmToken){
         return User.builder().fcmToken(fcmToken).build();
     }
+
+    public void clearFcm(){
+        this.fcmToken = "cleared";
+    }
 }

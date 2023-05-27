@@ -36,6 +36,7 @@ public class UserService {
         return user;
     }
 
+    @Transactional
     public void sendPushToUser(Long id) throws ExecutionException, InterruptedException {
         Optional<User> user= userRepository.findById(id);
 //                .orElseThrow(() -> new IllegalArgumentException());
@@ -45,6 +46,7 @@ public class UserService {
 
     }
 
+    @Transactional
     public void broadcast() throws ExecutionException, InterruptedException {
         List<User> users= userRepository.findAll();
         if(!users.isEmpty()){

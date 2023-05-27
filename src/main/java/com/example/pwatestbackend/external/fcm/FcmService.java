@@ -1,13 +1,8 @@
 package com.example.pwatestbackend.external.fcm;
 
 import com.example.pwatestbackend.domain.User;
-import com.google.firebase.messaging.FirebaseMessaging;
-import com.google.firebase.messaging.Message;
-import com.google.firebase.messaging.WebpushConfig;
-import com.google.firebase.messaging.WebpushNotification;
+import com.google.firebase.messaging.*;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,7 +11,6 @@ import java.util.concurrent.ExecutionException;
 @Service
 @Slf4j
 public class FcmService {
-   // private static final Logger logger = LoggerFactory.getLogger(FCMService.class);
 
     public void sendUser (User user) throws InterruptedException, ExecutionException {
         Message message = Message.builder()
@@ -26,8 +20,7 @@ public class FcmService {
                         .build())
                 .build();
 
-        String response = FirebaseMessaging.getInstance().sendAsync(message).get();
-        log.info("Sent message: " + response);
+        send(message,user);
     }
 
     public void sendAllUser (List<User> users) throws InterruptedException, ExecutionException {
@@ -40,13 +33,26 @@ public class FcmService {
                             .build())
                     .build();
 
-            String response = FirebaseMessaging.getInstance().sendAsync(message).get();
-            log.info("Sent message: " + response);
+            send(message,user);
         }
     }
-
-    public void send(Message message) {
-        FirebaseMessaging.getInstance().sendAsync(message);
+    public void send(Message message, User user) {
+        try {
+            String response = FirebaseMessaging.getInstance().sendAsync(message).get();
+            log.info("Sent message: " + response);
+        } catch (InterruptedException | ExecutionException e) {
+            Throwable cause = e.getCause();
+            if (cause instanceof FirebaseMessagingException fme) {
+                log.error("Firebase Notification Failed: " + fme.getMessage());
+                log.info("Firebase Notification token for the user: " + user.getId() + ", errorCodeName: " + fme.getErrorCode().toString());
+                if (fme.getErrorCode().toString().equals("INVALID_ARGUMENT") || fme.getErrorCode().toString().equals("NOT_FOUND") || fme.getErrorCode().toString().equals("UNREGISTERED")) {
+                    user.clearFcm();
+                    log.info("Deleted Firebase Notification token for the user: " + user.getId());
+                }
+            } else {
+                log.error("Unexpected error: " + e.getMessage());
+            }
+        }
     }
 
 }
